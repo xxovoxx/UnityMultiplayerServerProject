@@ -65,7 +65,7 @@ namespace MyServer.Tools
             Serializer.Serialize<MainPack>(stream, pack);
             byte[] data = stream.ToArray();//包体
             byte[] head = BitConverter.GetBytes(data.Length);//包头
-            return head.Concat(data).ToArray();
+            return head.Concat(data).ToArray();//合在一起返回
         }
     }
 }
