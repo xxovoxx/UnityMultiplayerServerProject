@@ -16,7 +16,15 @@ namespace MyServer.Controller
         }
         public MainPack Register(Server server, Client client, MainPack pack)//注册
         {
-
+            if (server.Register(client, pack))
+            {
+                pack.returnCode = ReturnCode.Succeed;
+            }
+            else
+            {
+                pack.returnCode = ReturnCode.Failed;
+            }
+            return pack;
         }
         public MainPack Login(Server server, Client client, MainPack pack)//登录
         {

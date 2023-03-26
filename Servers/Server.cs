@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using MyServer.Controller;
+using SocketProtocol;
 
 namespace MyServer.Servers
 {
@@ -38,9 +39,9 @@ namespace MyServer.Servers
         }
 
 
-        public void Register()
+        public bool Register(Client client ,MainPack pack)
         {
-
+           return client.GetUserDao.Register(pack);
         }
     }
 }

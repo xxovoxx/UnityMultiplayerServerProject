@@ -23,7 +23,7 @@ namespace MyServer.Controller
 
         public void HandleRequest(MainPack pack, Client client)//处理请求
         {
-            if(controlDict.TryGetValue(pack.requestCode, out BaseController controller))//注意P5 14：00
+            if(controlDict.TryGetValue(pack.requestCode, out BaseController controller))
             {
                 string metname=pack.actionCode.ToString();
                 MethodInfo method = controller.GetType().GetMethod(metname);
@@ -36,7 +36,7 @@ namespace MyServer.Controller
                 object ret = method.Invoke(controller,obj);
                 if(ret != null)
                 {
-
+                    client.Send(ret as MainPack);
                 }
             }
             else

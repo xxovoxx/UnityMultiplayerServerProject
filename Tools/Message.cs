@@ -58,5 +58,14 @@ namespace MyServer.Tools
                 }
             }
         }
+
+        public static byte[] PackData(MainPack pack)//包装数据
+        {
+            var stream = new MemoryStream();
+            Serializer.Serialize<MainPack>(stream, pack);
+            byte[] data = stream.ToArray();//包体
+            byte[] head = BitConverter.GetBytes(data.Length);//包头
+            return head.Concat(data).ToArray();
+        }
     }
 }
