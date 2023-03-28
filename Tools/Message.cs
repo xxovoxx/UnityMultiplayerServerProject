@@ -40,7 +40,7 @@ namespace MyServer.Tools
             }
         }
 
-        public void ReadBuffer(int len)//读取消息 传入消息长度
+        public void ReadBuffer(int len, Action<MainPack> HandleRequest)//读取消息 传入消息长度  第二个参数的回调函数是调用Client那边的函数
         {
             startIndex += len;
             if (startIndex <= 4) return;//数据包的包头，前四个字节是int类型，储存了包体的数据长度,如果长度小于等于4说明包不完整
@@ -50,7 +50,9 @@ namespace MyServer.Tools
                 if (startIndex >= (count + 4))
                 {
                     MainPack pack = Serializer.Deserialize<MainPack>(new MemoryStream(buffer, 4, count));
-                    Array.Copy(buffer, count + 4, buffer, 0, startIndex - count - 4);
+                    HandleRequest(pack);
+                    Array.Copy(buffer, count + 4, buffer, 0, startIndex - count - 4);//将包头和包体后面的部分拷贝到buffer的最前面，从而读取下一个包
+                    startIndex -= (count + 4);
                 }
                 else
                 {

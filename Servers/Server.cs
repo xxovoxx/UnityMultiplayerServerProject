@@ -34,14 +34,13 @@ namespace MyServer.Servers
         private void AcceptCallback(IAsyncResult iar)
         {
             Socket client = socket.EndAccept(iar);
-            clientList.Add(new Client(client));
+            clientList.Add(new Client(client, this));
             StartAccept();//再次开始应答
         }
 
-
-        public bool Register(Client client ,MainPack pack)
+        public void HandleRequest(MainPack pack, Client client)
         {
-           return client.GetUserDao.Register(pack);
+            controllerManager.HandleRequest(pack,client);
         }
     }
 }

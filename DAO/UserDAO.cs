@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using Mysqlx.Connection;
 using SocketProtocol;
 
 namespace MyServer.DAO
@@ -38,30 +40,43 @@ namespace MyServer.DAO
             string account = pack.registerPack.Account;
             string password = pack.registerPack.Password;
 
-            sql = "SELECT FROM socketgamedatabase.userdata WHERE Account = '@account'";
-            MySqlCommand command = new MySqlCommand(sql, mySqlConnection);
-            MySqlDataReader read= command.ExecuteReader();
-            if (read.Read())//如果查询到数据库已经有这个account后，返回真值，用户名已被注册
+            sql = "SELECT * FROM socketgamedatabase.userdata WHERE Account = @account";
+            using (MySqlCommand command = new MySqlCommand(sql, mySqlConnection))
             {
-                return false; 
+                command.Parameters.AddWithValue("@account", account);
+
+                using(MySqlDataReader read = command.ExecuteReader())
+                {
+                    if (read.HasRows)//如果查询到数据库已经有这个account后，返回真值，用户名已被注册
+                    {
+                        return false;
+                    }
+                }
             }
 
             password = GetMd5Hash(password);//加密密码
+
             sql = "INSERT INTO socketgamedatabase.userdata (DisplayName, Account,PasswordMD5) VALUES (@displayName, @account, @password)"; 
-            command = new MySqlCommand(sql, mySqlConnection);
-            try
+            using(MySqlCommand command = new MySqlCommand(sql, mySqlConnection))
             {
-                command.ExecuteNonQuery();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
+                command.Parameters.AddWithValue("@displayName", displayName);
+                command.Parameters.AddWithValue("@account", account);
+                command.Parameters.AddWithValue("@password", password);
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return false;
+                }
             }
         }
 
-        static string GetMd5Hash(string input)//MD5加密
+        static string GetMd5Hash(string input)//MD5加密算法
         {
             using (MD5 md5Hasher = MD5.Create())
             {

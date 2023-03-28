@@ -16,18 +16,21 @@ namespace MyServer.Servers
         private Socket socket;
         private Message message;
         private UserDAO userDAO;
+        private Server server;
 
         public UserDAO GetUserDao
         {
             get { return userDAO; }
         }
 
-        public Client(Socket socket)//构造函数
+        public Client(Socket socket, Server server)//构造函数
         {
             userDAO = new UserDAO();
             message = new Message();
 
+            this.server = server;
             this.socket = socket;
+
             StartReceive();
         }
 
@@ -47,7 +50,7 @@ namespace MyServer.Servers
                     return;
                 }
 
-                message.ReadBuffer(len);
+                message.ReadBuffer(len, HandleRequest);
                 StartReceive();//解析完再次开始接收
             }
             catch
@@ -56,9 +59,19 @@ namespace MyServer.Servers
             }
         }
 
+        private void HandleRequest(MainPack pack)
+        {
+            server.HandleRequest(pack, this);
+        }
+
         public void Send(MainPack pack)//给客户端发送消息
         {
             socket.Send(Message.PackData(pack));
+        }
+
+        public bool Register(MainPack pack)
+        {
+            return GetUserDao.Register(pack);
         }
     }
 }
