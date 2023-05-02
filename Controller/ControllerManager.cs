@@ -19,6 +19,9 @@ namespace MyServer.Controller
 
             UserController userController = new UserController();
             controlDict.Add(userController.GetRequestCode, userController);
+
+            RoomController roomController = new RoomController();
+            controlDict.Add(roomController.GetRequestCode, roomController);
         }
 
         public void HandleRequest(MainPack pack, Client client)//处理请求

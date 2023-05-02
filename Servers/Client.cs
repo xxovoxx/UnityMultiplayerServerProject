@@ -8,10 +8,12 @@ using System.Net.Sockets;
 using MyServer.Tools;
 using MyServer.DAO;
 using SocketProtocol;
+using MySql.Data.MySqlClient;
 
 namespace MyServer.Servers
 {
-    internal class Client//管理连接的客户端，每有一个客户端连接进来就会实例化一个
+    //管理连接的客户端，每有一个客户端连接进来就会实例化一个
+    internal class Client
     {
         private Socket socket;
         private Message message;
@@ -23,7 +25,8 @@ namespace MyServer.Servers
             get { return userDAO; }
         }
 
-        public Client(Socket socket, Server server)//构造函数
+        //构造函数
+        public Client(Socket socket, Server server)
         {
             userDAO = new UserDAO();
             message = new Message();
@@ -34,14 +37,17 @@ namespace MyServer.Servers
             StartReceive();
         }
 
-        private void StartReceive()//开始接收数据
+        //开始接收数据
+        private void StartReceive()
         {
             socket.BeginReceive(message.Buffer,message.StartIndex,message.Remsize,SocketFlags.None,ReceiveCallback,null);
         }
 
-        private void ReceiveCallback(IAsyncResult iar)//解析消息
+        //解析消息
+        private void ReceiveCallback(IAsyncResult iar)
         {
-            try//防止客户端非正常退出报错
+            //防止客户端非正常退出报错
+            try
             {
                 if (socket == null || socket.Connected == false) return;
                 int len = socket.EndReceive(iar);
@@ -51,7 +57,8 @@ namespace MyServer.Servers
                 }
 
                 message.ReadBuffer(len, HandleRequest);
-                StartReceive();//解析完再次开始接收
+                //解析完再次开始接收
+                StartReceive();
             }
             catch
             {
@@ -64,7 +71,8 @@ namespace MyServer.Servers
             server.HandleRequest(pack, this);
         }
 
-        public void Send(MainPack pack)//给客户端发送消息
+        //给客户端发送消息
+        public void Send(MainPack pack)
         {
             socket.Send(Message.PackData(pack));
         }
@@ -72,6 +80,10 @@ namespace MyServer.Servers
         public bool Register(MainPack pack)
         {
             return GetUserDao.Register(pack);
+        }
+        public bool Login(MainPack pack)
+        {
+            return GetUserDao.Login(pack);
         }
     }
 }

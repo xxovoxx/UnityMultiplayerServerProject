@@ -26,9 +26,17 @@ namespace MyServer.Controller
             }
             return pack;
         }
-        //public MainPack Login(Server server, Client client, MainPack pack)//登录
-        //{
-
-        //}
+        public MainPack Login(Server server, Client client, MainPack pack)//登录
+        {
+            if(client.Login(pack))
+            {
+                pack.returnCode = ReturnCode.Succeed;
+            }
+            else
+            {
+                pack.returnCode = ReturnCode.Failed;
+            }
+            return pack;
+        }
     }
 }

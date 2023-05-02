@@ -28,6 +28,16 @@ namespace SocketProtocol
         [global::ProtoBuf.ProtoMember(4)]
         public RegisterPack registerPack { get; set; }
 
+        [global::ProtoBuf.ProtoMember(5)]
+        public LoginPack loginPack { get; set; }
+
+        [global::ProtoBuf.ProtoMember(6, Name = @"roomPack")]
+        public global::System.Collections.Generic.List<RoomPack> roomPacks { get; } = new global::System.Collections.Generic.List<RoomPack>();
+
+        [global::ProtoBuf.ProtoMember(7, Name = @"str")]
+        [global::System.ComponentModel.DefaultValue("")]
+        public string Str { get; set; } = "";
+
     }
 
     [global::ProtoBuf.ProtoContract()]
@@ -69,10 +79,33 @@ namespace SocketProtocol
     }
 
     [global::ProtoBuf.ProtoContract()]
+    public partial class RoomPack : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        [global::System.ComponentModel.DefaultValue("")]
+        public string RoomName { get; set; } = "";
+
+        [global::ProtoBuf.ProtoMember(2)]
+        public int MaxNum { get; set; }
+
+        [global::ProtoBuf.ProtoMember(3)]
+        public int CurrentNum { get; set; }
+
+        [global::ProtoBuf.ProtoMember(4)]
+        public RoomState roomState { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
     public enum RequestCode
     {
         RequestNone = 0,
         User = 1,
+        Room = 2,
     }
 
     [global::ProtoBuf.ProtoContract()]
@@ -81,6 +114,8 @@ namespace SocketProtocol
         ActionNone = 0,
         Register = 1,
         Login = 2,
+        CreateRoom = 3,
+        FindRoom = 4,
     }
 
     [global::ProtoBuf.ProtoContract()]
@@ -89,6 +124,13 @@ namespace SocketProtocol
         ReturnNone = 0,
         Succeed = 1,
         Failed = 2,
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public enum RoomState
+    {
+        OutOfGame = 0,
+        InGame = 1,
     }
 
 }
