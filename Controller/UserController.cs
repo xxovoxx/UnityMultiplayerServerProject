@@ -31,6 +31,9 @@ namespace MyServer.Controller
             if(client.Login(pack))
             {
                 pack.returnCode = ReturnCode.Succeed;
+                client.account = pack.loginPack.Account;
+                client.displayName = client.GetPlayerDisplayName(client.account);
+                client.UID = client.GetPlayerUID(client.account);
             }
             else
             {

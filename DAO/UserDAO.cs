@@ -124,5 +124,43 @@ namespace MyServer.DAO
                 return sBuilder.ToString();
             }
         }
+
+        public string GetPlayerDisplayName(string account)
+        {
+            string sql = "SELECT DisplayName FROM socketgamedatabase.userdata WHERE Account = @account";
+            using (MySqlCommand command = new MySqlCommand(sql, mySqlConnection))
+            {
+                command.Parameters.AddWithValue("@account", account);
+
+                using (MySqlDataReader read = command.ExecuteReader())
+                {
+                    if(read.Read())
+                    {
+                        return read.GetString("DisplayName");
+                    }
+                    return new String("");
+                }
+            }
+        }
+
+        public int GetPlayerUID(string account)
+        {
+            string sql = "SELECT UID FROM socketgamedatabase.userdata WHERE Account = @account";
+
+            using (MySqlCommand command = new MySqlCommand(sql, mySqlConnection))
+            {
+                command.Parameters.AddWithValue("@account", account);
+
+                using (MySqlDataReader read = command.ExecuteReader())
+                {
+                    if (read.Read())
+                    {
+                        return read.GetInt32("UID");
+                    }
+                    return 0;
+                }
+            }
+        }
+
     }
 }

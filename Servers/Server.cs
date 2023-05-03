@@ -19,6 +19,8 @@ namespace MyServer.Servers
 
         private ControllerManager controllerManager;
 
+        private int roomID = 0;
+
         public Server(int port)//用于main函数调用的构造函数，传入端口
         {
             controllerManager = new ControllerManager(this);
@@ -46,17 +48,26 @@ namespace MyServer.Servers
             controllerManager.HandleRequest(pack,client);
         }
 
-        public ReturnCode CreateRoom(Client client, MainPack pack)
+        public MainPack CreateRoom(Client client, MainPack pack)
         {
             try
             {
-                Room room = new Room(client, pack.roomPacks[0]);
+                if (roomID > 2000000000)
+                    roomID = 0;
+                Room room = new Room(client, pack.roomPacks[0], roomID);
                 roomList.Add(room);
-                return ReturnCode.Succeed;
+                foreach(PlayerPack playerPack in room.GetPlayerInfo())
+                {
+                    pack.playerPacks.Add(playerPack);
+                }
+                roomID++;
+                pack.returnCode = ReturnCode.Succeed;
+                return pack;
             }
             catch
             {
-                return ReturnCode.Failed;
+                pack.returnCode = ReturnCode.Failed;
+                return pack;
             }
         }
 
@@ -76,6 +87,54 @@ namespace MyServer.Servers
             {
                 pack.returnCode = ReturnCode.Failed;
             }
+            return pack;
+        }
+
+        public MainPack JoinRoom(Client client, MainPack pack)
+        {
+            foreach(Room room in roomList)
+            {
+                //是否有这个房间
+                if (room.GetRoomInfo.Id.ToString().Equals(pack.Str))
+                {
+                    //房间是否可以加入
+                    switch (room.GetRoomInfo.roomState)
+                    {
+                        //游戏中 不可加入
+                        case RoomState.InGame:
+                            pack.returnCode = ReturnCode.Failed;
+                            break;
+                        //游戏外 可加入
+                        case RoomState.OutOfGame:
+                            room.Join(client);
+                            pack.roomPacks.Add(room.GetRoomInfo);
+                            foreach (PlayerPack playerPack in room.GetPlayerInfo())
+                            {
+                                pack.playerPacks.Add(playerPack);
+                            }
+                            pack.returnCode = ReturnCode.Succeed;
+                            break;
+                    }
+                    return pack;
+                }
+            }
+            //遍历完了也没找到房间
+            pack.returnCode = ReturnCode.Failed;
+            return pack;
+        }
+
+        //退出房间
+        public MainPack ExitRoom(Client client, MainPack pack)
+        {
+            //出现问题的情况
+            if(client.GetRoom == null)
+            {
+                pack.returnCode = ReturnCode.Failed;
+                return pack;
+            }
+
+            client.GetRoom.Exit(client);
+            pack.returnCode = ReturnCode.Succeed;
             return pack;
         }
     }

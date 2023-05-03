@@ -20,6 +20,21 @@ namespace MyServer.Servers
         private UserDAO userDAO;
         private Server server;
 
+        //当前此客户端的房间
+        public Room GetRoom
+        {
+            get;set;
+        }
+
+        //此客户端登录的账号
+        public string account
+        {
+            get;set;
+        }
+
+        public string displayName;
+        public int UID;
+
         public UserDAO GetUserDao
         {
             get { return userDAO; }
@@ -84,6 +99,16 @@ namespace MyServer.Servers
         public bool Login(MainPack pack)
         {
             return GetUserDao.Login(pack);
+        }
+
+        public string GetPlayerDisplayName(string account)
+        {
+            return GetUserDao.GetPlayerDisplayName(account);
+        }
+
+        public int GetPlayerUID(string account)
+        {
+            return GetUserDao.GetPlayerUID(account);
         }
     }
 }

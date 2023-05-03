@@ -34,7 +34,10 @@ namespace SocketProtocol
         [global::ProtoBuf.ProtoMember(6, Name = @"roomPack")]
         public global::System.Collections.Generic.List<RoomPack> roomPacks { get; } = new global::System.Collections.Generic.List<RoomPack>();
 
-        [global::ProtoBuf.ProtoMember(7, Name = @"str")]
+        [global::ProtoBuf.ProtoMember(7, Name = @"playerPack")]
+        public global::System.Collections.Generic.List<PlayerPack> playerPacks { get; } = new global::System.Collections.Generic.List<PlayerPack>();
+
+        [global::ProtoBuf.ProtoMember(8, Name = @"str")]
         [global::System.ComponentModel.DefaultValue("")]
         public string Str { get; set; } = "";
 
@@ -98,6 +101,25 @@ namespace SocketProtocol
         [global::ProtoBuf.ProtoMember(4)]
         public RoomState roomState { get; set; }
 
+        [global::ProtoBuf.ProtoMember(5, Name = @"ID")]
+        public int Id { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class PlayerPack : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        [global::System.ComponentModel.DefaultValue("")]
+        public string DisplayName { get; set; } = "";
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"UID")]
+        public int Uid { get; set; }
+
     }
 
     [global::ProtoBuf.ProtoContract()]
@@ -116,6 +138,9 @@ namespace SocketProtocol
         Login = 2,
         CreateRoom = 3,
         FindRoom = 4,
+        PlayerList = 5,
+        JoinRoom = 6,
+        Exit = 7,
     }
 
     [global::ProtoBuf.ProtoContract()]
