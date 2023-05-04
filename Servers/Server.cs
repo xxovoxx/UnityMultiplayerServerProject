@@ -7,13 +7,13 @@ using System.Net;
 using System.Net.Sockets;
 using MyServer.Controller;
 using SocketProtocol;
-
+using MyServer.Tools;
 namespace MyServer.Servers
 {
     internal class Server//监听客户端连接
     {
         private Socket socket;
-
+        private Log log;
         private List<Client> clientList = new List<Client>();//储存连接的客户端
         private List<Room> roomList = new List<Room>();//储存房间
 
@@ -24,10 +24,11 @@ namespace MyServer.Servers
         public Server(int port)//用于main函数调用的构造函数，传入端口
         {
             controllerManager = new ControllerManager(this);
-
+            log = new Log();
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);//初始化一个TCP协议的连接
             socket.Bind(new IPEndPoint(IPAddress.Any, port));//绑定IP和端口
             socket.Listen(0);//开始监听
+            log.make_log(0,$"Start listening on port {port} !");
             StartAccept();
         }
 
@@ -40,6 +41,7 @@ namespace MyServer.Servers
         {
             Socket client = socket.EndAccept(iar);
             clientList.Add(new Client(client, this));
+            log.make_log(0,"{socket.RemoteEndPoint.ToString().Split(':')[0]} has connected !");
             StartAccept();//再次开始应答
         }
 
@@ -62,6 +64,7 @@ namespace MyServer.Servers
                 }
                 roomID++;
                 pack.returnCode = ReturnCode.Succeed;
+                log.make_log(0,$"Room ID {roomID-1} has benn created successfully !");
                 return pack;
             }
             catch
